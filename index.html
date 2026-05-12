@@ -220,7 +220,16 @@ body{font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5}
 .mo-btns{display:flex;gap:10px;margin-top:4px}
 .mo-btns .btn-p{flex:1}
 
-/* Big mode */
+/* Medicine & Supplement action tabs */
+.stab.on{background:var(--supp)!important;color:#fff!important}
+.mtab.on{background:var(--blue)!important;color:#fff!important}
+.sctab.on{background:var(--ink)!important;color:#fff!important}
+
+/* Days badge */
+.days-badge{display:inline-block;background:var(--parchment2);border:1.5px solid var(--rule);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;color:var(--ink2);margin-top:4px}
+.days-badge.low{background:var(--low-bg);border-color:#FCDBA0;color:var(--low)}
+.days-badge.crit{background:var(--crit-bg);border-color:#F5BDBA;color:var(--crit)}
+
 .big .tn{font-size:21px}.big .td{font-size:16px}
 .big .stock-name{font-size:18px}.big .stock-count{font-size:26px}
 .big .supp-name{font-size:18px}.big .supp-count{font-size:26px}
@@ -257,6 +266,9 @@ body{font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <span class="ndot" id="ndot"></span>
     </button>
+    <button class="hdr-btn" onclick="openMo('m-export')" title="Export / Import data">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    </button>
   </div>
 </header>
 
@@ -266,7 +278,7 @@ body{font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5}
 <!-- ══ HOME ══ -->
 <div id="pg-home" class="pg on">
   <div class="hero">
-    <div class="hero-label">Today's priority</div>
+    <div class="hero-label">Today's overview</div>
     <div class="hero-title" id="tc-title">Loading…</div>
     <div class="hero-row">
       <div class="hero-stat"><div class="hero-n" id="tc-crit">—</div><div class="hero-l">Critical</div></div>
@@ -275,34 +287,43 @@ body{font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5}
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-label">Running low — reorder soon</div>
-    <div id="refill-list"></div>
+  <!-- Medicine alerts -->
+  <div class="card" id="home-med-card">
+    <div class="card-label" style="color:var(--blue)">
+      <span>💊 Medicine alerts</span>
+      <button class="btn-s" style="font-size:11px;padding:4px 8px" onclick="nav('stock')">View all →</button>
+    </div>
+    <div id="home-med-alerts"></div>
   </div>
 
-  <div class="card">
-    <div class="card-label">All medications</div>
-    <div id="dash-stocks"></div>
+  <!-- Supplement alerts -->
+  <div class="card" id="home-supp-card">
+    <div class="card-label" style="color:var(--supp)">
+      <span>🌿 Supplement alerts</span>
+      <button class="btn-s" style="font-size:11px;padding:4px 8px" onclick="nav('supps')">View all →</button>
+    </div>
+    <div id="home-supp-alerts"></div>
   </div>
 
+  <!-- Quick actions -->
   <div class="card">
     <div class="card-label">Quick actions</div>
     <div class="tile-grid">
-      <button class="tile" onclick="nav('pack')">
+      <button class="tile" onclick="nav('stock');switchMedTab('pack')">
         <svg viewBox="0 0 24 24" fill="none" stroke="#163FB8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8"/><path d="M23 3H1l2 5h18l2-5z"/><line x1="12" y1="12" x2="12" y2="17"/></svg>
         <div><div class="tile-label">Pack meds</div><div class="tile-sub">Record dispensing</div></div>
       </button>
-      <button class="tile" onclick="nav('stock')">
+      <button class="tile" onclick="nav('stock');switchMedTab('stockin')">
         <svg viewBox="0 0 24 24" fill="none" stroke="#1A6B3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-        <div><div class="tile-label">Add stock</div><div class="tile-sub">Log delivery</div></div>
+        <div><div class="tile-label">Stock in</div><div class="tile-sub">Log delivery</div></div>
       </button>
-      <button class="tile" onclick="nav('supps')">
+      <button class="tile" onclick="nav('supps');switchSuppTab('pack')">
         <svg viewBox="0 0 24 24" fill="none" stroke="#5B4DA0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 1 5 5v3H7V7a5 5 0 0 1 5-5z"/><rect x="3" y="10" width="18" height="11" rx="2"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
-        <div><div class="tile-label">Supplements</div><div class="tile-sub">Vitamins & more</div></div>
+        <div><div class="tile-label">Pack supps</div><div class="tile-sub">Supplement pack</div></div>
       </button>
-      <button class="tile" onclick="nav('people')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#A56112" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <div><div class="tile-label">People</div><div class="tile-sub">Add & edit</div></div>
+      <button class="tile" onclick="nav('supps');switchSuppTab('stockin')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#5B4DA0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <div><div class="tile-label">Supp stock in</div><div class="tile-sub">Log top-up</div></div>
       </button>
       <button class="tile" onclick="nav('batch')">
         <svg viewBox="0 0 24 24" fill="none" stroke="#6B5E4A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
@@ -318,67 +339,175 @@ body{font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5}
 
 <!-- ══ SCHEDULE ══ -->
 <div id="pg-schedule" class="pg">
-  <div class="ph"><h1>Schedule</h1><p>Daily medication · 每日服藥</p></div>
+  <div class="ph"><h1>Schedule</h1><p>Daily checklist · 每日服藥記錄</p></div>
+
+  <!-- Category tabs: Medicine | Supplements -->
+  <div style="display:flex;gap:0;background:var(--parchment2);border:1.5px solid var(--rule);border-radius:var(--rs);overflow:hidden;margin-bottom:14px">
+    <button class="sctab on" id="sctab-med"  onclick="switchSchedCat('med')"
+      style="flex:1;padding:12px 4px;font-size:14px;font-weight:700;border:none;background:none;cursor:pointer;font-family:var(--sans);color:var(--ink3);border-right:1.5px solid var(--rule);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Medicine
+    </button>
+    <button class="sctab" id="sctab-supp" onclick="switchSchedCat('supp')"
+      style="flex:1;padding:12px 4px;font-size:14px;font-weight:700;border:none;background:none;cursor:pointer;font-family:var(--sans);color:var(--ink3);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M12 2a5 5 0 0 1 5 5v3H7V7a5 5 0 0 1 5-5z"/><rect x="3" y="10" width="18" height="11" rx="2"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+      Supplements
+    </button>
+  </div>
+
+  <!-- Person tabs -->
   <div class="ptabs" id="sched-tabs"></div>
-  <div id="sched-content"></div>
+
+  <!-- Medicine schedule -->
+  <div id="sched-med-content"></div>
+
+  <!-- Supplement schedule -->
+  <div id="sched-supp-content" style="display:none"></div>
 </div>
 
-<!-- ══ PACK ══ -->
-<div id="pg-pack" class="pg">
-  <div class="ph"><h1>Pack Meds</h1><p>Record every dispensing · 分藥記錄</p></div>
-  <div class="card">
-    <div class="fg"><label class="fl">For whom</label><select class="fs" id="pk-person" onchange="updatePackDrugs()"></select></div>
-    <div class="fg"><label class="fl">Medication</label><select class="fs" id="pk-drug"></select></div>
-    <div class="fg"><label class="fl">Quantity packed</label><input class="fi" id="pk-qty" type="number" placeholder="e.g. 28 tablets" min="1"></div>
-    <div class="fg"><label class="fl">Dose per time</label><input class="fi" id="pk-dose" type="text" placeholder="e.g. 1 pill / 0.5 pill"></div>
-    <div class="fg"><label class="fl">Batch number</label><input class="fi" id="pk-batch" type="text" placeholder="e.g. AX992"></div>
-    <div class="fg"><label class="fl">Packed by</label><input class="fi" id="pk-by" type="text" placeholder="Your name"></div>
-    <button class="btn-p" id="pk-btn" onclick="doPack()">Confirm pack</button>
-  </div>
-  <div class="card"><div class="card-label">Recent log</div><div id="pack-log"></div></div>
-</div>
-
-<!-- ══ STOCK ══ -->
+<!-- ══ MEDICINE ══ -->
 <div id="pg-stock" class="pg">
-  <div class="ph"><h1>Add Stock</h1><p>Record incoming delivery · 新增庫存</p></div>
-  <div class="card">
-    <div class="fg"><label class="fl">Medication</label><select class="fs" id="st-drug"></select></div>
-    <div class="fg"><label class="fl">Quantity received</label><input class="fi" id="st-qty" type="number" placeholder="Number of tablets"></div>
-    <div class="fg"><label class="fl">Batch number</label><input class="fi" id="st-batch" type="text" placeholder="e.g. AX992"></div>
-    <div class="fg"><label class="fl">Expiry date</label><input class="fi" id="st-exp" type="month"></div>
-    <div class="fg"><label class="fl">Supplier</label><input class="fi" id="st-src" type="text" placeholder="e.g. NHS prescription, pharmacy"></div>
-    <button class="btn-p" id="st-btn" onclick="doStock()">Add to stock</button>
+  <div class="ph"><h1>Medicine</h1><p>Prescriptions & medication stock · 藥物管理</p></div>
+
+  <!-- Hero stats -->
+  <div class="hero" id="med-hero">
+    <div class="hero-label">Medicine overview</div>
+    <div class="hero-title" id="mh-title">Loading…</div>
+    <div class="hero-row">
+      <div class="hero-stat"><div class="hero-n" id="mh-total">—</div><div class="hero-l">Total items</div></div>
+      <div class="hero-stat"><div class="hero-n" id="mh-crit">—</div><div class="hero-l">Critical</div></div>
+      <div class="hero-stat"><div class="hero-n" id="mh-days">—</div><div class="hero-l">Avg days left</div></div>
+    </div>
   </div>
-  <div class="card"><div class="card-label">Current stock</div><div id="st-list"></div></div>
+
+  <!-- Action tabs -->
+  <div style="display:flex;gap:0;background:var(--parchment2);border:1.5px solid var(--rule);border-radius:var(--rs);overflow:hidden;margin-bottom:14px">
+    <button class="mtab on" id="mtab-list"    onclick="switchMedTab('list')"    style="flex:1;padding:11px 4px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;font-family:var(--sans);color:var(--ink3);border-right:1.5px solid var(--rule);transition:all .15s">📋 List</button>
+    <button class="mtab"    id="mtab-stockin"  onclick="switchMedTab('stockin')"  style="flex:1;padding:11px 4px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;font-family:var(--sans);color:var(--ink3);border-right:1.5px solid var(--rule);transition:all .15s">📥 Stock In</button>
+    <button class="mtab"    id="mtab-pack"     onclick="switchMedTab('pack')"     style="flex:1;padding:11px 4px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;font-family:var(--sans);color:var(--ink3);transition:all .15s">📦 Pack</button>
+  </div>
+
+  <!-- TAB: LIST -->
+  <div id="mtab-panel-list">
+    <div class="ptabs" id="med-tabs"></div>
+    <div id="med-person-content"></div>
+    <div class="card">
+      <div class="card-label">All medications
+        <span id="med-all-count" style="font-size:11px;color:var(--ink3)"></span>
+      </div>
+      <div id="med-all-list"></div>
+    </div>
+  </div>
+
+  <!-- TAB: STOCK IN -->
+  <div id="mtab-panel-stockin" style="display:none">
+    <div class="card">
+      <div class="card-label" style="margin-bottom:16px">📥 Add medicine stock</div>
+      <div class="fg"><label class="fl">Medication</label><select class="fs" id="st-drug"></select></div>
+      <div class="fg"><label class="fl">Quantity received (tablets)</label><input class="fi" id="st-qty" type="number" placeholder="e.g. 28"></div>
+      <div class="fg"><label class="fl">Batch number</label><input class="fi" id="st-batch" type="text" placeholder="e.g. AX992"></div>
+      <div class="fg"><label class="fl">Expiry date</label><input class="fi" id="st-exp" type="month"></div>
+      <div class="fg"><label class="fl">Supplier</label><input class="fi" id="st-src" type="text" placeholder="e.g. NHS prescription, pharmacy"></div>
+      <button class="btn-p" id="st-btn" onclick="doStock()">Add to stock</button>
+    </div>
+    <div class="card"><div class="card-label">Recent stock-in log</div><div id="st-log"></div></div>
+  </div>
+
+  <!-- TAB: PACK -->
+  <div id="mtab-panel-pack" style="display:none">
+    <div class="card">
+      <div class="card-label" style="margin-bottom:16px">📦 Record dispensing</div>
+      <div class="fg"><label class="fl">For whom</label><select class="fs" id="pk-person" onchange="updatePackDrugs()"></select></div>
+      <div class="fg"><label class="fl">Medication</label><select class="fs" id="pk-drug" onchange="updatePackPreview()"></select></div>
+      <div id="pk-preview" style="background:var(--blue-light);border:1.5px solid var(--blue);border-radius:var(--rx);padding:12px;margin-bottom:16px;display:none">
+        <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px">Current stock info</div>
+        <div id="pk-preview-text" style="font-size:14px;color:var(--ink2)"></div>
+      </div>
+      <div class="fg"><label class="fl">Quantity to pack (tablets)</label><input class="fi" id="pk-qty" type="number" placeholder="e.g. 28" min="1" oninput="updatePackPreview()"></div>
+      <div class="fg"><label class="fl">Dose per time</label><input class="fi" id="pk-dose" type="text" placeholder="e.g. 1 pill / 0.5 pill"></div>
+      <div class="fg"><label class="fl">Batch number</label><input class="fi" id="pk-batch" type="text" placeholder="e.g. AX992"></div>
+      <div class="fg"><label class="fl">Packed by</label><input class="fi" id="pk-by" type="text" placeholder="Your name"></div>
+      <div id="pk-warn" style="display:none;background:var(--crit-bg);border:1.5px solid #F5BDBA;border-radius:var(--rx);padding:10px 14px;margin-bottom:12px;font-size:14px;color:var(--crit)"></div>
+      <button class="btn-p" id="pk-btn" onclick="doPack()">Confirm pack</button>
+    </div>
+    <div class="card"><div class="card-label">Recent pack log</div><div id="pack-log"></div></div>
+  </div>
 </div>
 
 <!-- ══ SUPPLEMENTS ══ -->
 <div id="pg-supps" class="pg">
   <div class="ph"><h1>Supplements</h1><p>Vitamins, minerals & wellness · 補充劑</p></div>
 
-  <!-- Supplement hero -->
+  <!-- Hero stats -->
   <div class="supp-hero">
-    <div class="supp-hero-label">Supplement stock</div>
+    <div class="supp-hero-label">Supplement overview</div>
     <div class="supp-hero-title" id="sh-title">Loading…</div>
     <div class="supp-hero-row">
       <div class="supp-stat"><div class="supp-n" id="sh-total">—</div><div class="supp-l">Total items</div></div>
-      <div class="supp-stat"><div class="supp-n" id="sh-low">—</div><div class="supp-l">Low stock</div></div>
-      <div class="supp-stat"><div class="supp-n" id="sh-ok">—</div><div class="supp-l">Well stocked</div></div>
+      <div class="supp-stat"><div class="supp-n" id="sh-low">—</div><div class="supp-l">Low / Critical</div></div>
+      <div class="supp-stat"><div class="supp-n" id="sh-days">—</div><div class="supp-l">Avg days left</div></div>
     </div>
   </div>
 
-  <!-- Per-person supplement tabs -->
-  <div class="ptabs" id="supp-tabs"></div>
+  <!-- Action tabs: Stock In | Pack | List -->
+  <div style="display:flex;gap:0;background:var(--parchment2);border:1.5px solid var(--rule);border-radius:var(--rs);overflow:hidden;margin-bottom:14px">
+    <button class="stab on" id="stab-list"   onclick="switchSuppTab('list')"   style="flex:1;padding:11px 4px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;font-family:var(--sans);color:var(--ink3);border-right:1.5px solid var(--rule);transition:all .15s">📋 List</button>
+    <button class="stab"    id="stab-stockin" onclick="switchSuppTab('stockin')" style="flex:1;padding:11px 4px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;font-family:var(--sans);color:var(--ink3);border-right:1.5px solid var(--rule);transition:all .15s">📥 Stock In</button>
+    <button class="stab"    id="stab-pack"    onclick="switchSuppTab('pack')"    style="flex:1;padding:11px 4px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;font-family:var(--sans);color:var(--ink3);transition:all .15s">📦 Pack</button>
+  </div>
 
-  <!-- Supplement list per person -->
-  <div id="supp-person-content"></div>
-
-  <!-- All supplements flat list -->
-  <div class="card" id="supp-all-card">
-    <div class="card-label">All supplements
-      <button class="btn-s" style="font-size:12px;padding:5px 10px" onclick="openAddSupp(null)">+ Add</button>
+  <!-- TAB: LIST -->
+  <div id="stab-panel-list">
+    <div class="ptabs" id="supp-tabs"></div>
+    <div id="supp-person-content"></div>
+    <div class="card" id="supp-all-card">
+      <div class="card-label">All supplements
+        <button class="btn-s" style="font-size:12px;padding:5px 10px" onclick="openAddSupp(null)">+ Add</button>
+      </div>
+      <div id="supp-all-list"></div>
     </div>
-    <div id="supp-all-list"></div>
+  </div>
+
+  <!-- TAB: STOCK IN -->
+  <div id="stab-panel-stockin" style="display:none">
+    <div class="card">
+      <div class="card-label" style="margin-bottom:16px">📥 Add supplement stock</div>
+      <div class="fg"><label class="fl">For whom</label><select class="fs" id="ssi-person" onchange="updateSuppStockItems()"></select></div>
+      <div class="fg"><label class="fl">Supplement</label><select class="fs" id="ssi-item"></select></div>
+      <div class="fg"><label class="fl">Quantity received (units)</label><input class="fi" id="ssi-qty" type="number" placeholder="e.g. 60 capsules" min="1"></div>
+      <div class="fg"><label class="fl">Expiry date (optional)</label><input class="fi" id="ssi-exp" type="month"></div>
+      <div class="fg"><label class="fl">Source / supplier</label><input class="fi" id="ssi-src" type="text" placeholder="e.g. iHerb, pharmacy, Amazon"></div>
+      <button class="btn-p" id="ssi-btn" onclick="doSuppStockIn()" style="background:var(--supp)">Add to stock</button>
+    </div>
+    <div class="card"><div class="card-label">Recent stock-in log</div><div id="ssi-log"></div></div>
+  </div>
+
+  <!-- TAB: PACK -->
+  <div id="stab-panel-pack" style="display:none">
+    <div class="card">
+      <div class="card-label" style="margin-bottom:16px">📦 Record dispensing</div>
+      <div class="fg"><label class="fl">For whom</label><select class="fs" id="sp-person" onchange="updateSuppPackItems()"></select></div>
+      <div class="fg"><label class="fl">Supplement</label><select class="fs" id="sp-item" onchange="updateSuppPackPreview()"></select></div>
+      <div id="sp-preview" style="background:var(--supp-bg);border:1.5px solid var(--supp-border);border-radius:var(--rx);padding:12px;margin-bottom:16px;display:none">
+        <div style="font-size:13px;font-weight:700;color:var(--supp);margin-bottom:6px">Auto-calculated from frequency</div>
+        <div id="sp-preview-text" style="font-size:14px;color:var(--ink2)"></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Pack duration</label>
+        <select class="fs" id="sp-duration" onchange="updateSuppPackPreview()">
+          <option value="7">7 days (1 week)</option>
+          <option value="14" selected>14 days (2 weeks)</option>
+          <option value="28">28 days (4 weeks)</option>
+          <option value="30">30 days (1 month)</option>
+          <option value="custom">Custom quantity</option>
+        </select>
+      </div>
+      <div class="fg" id="sp-custom-qty-fg" style="display:none"><label class="fl">Custom quantity (units)</label><input class="fi" id="sp-qty" type="number" placeholder="e.g. 15 capsules" min="1"></div>
+      <div class="fg"><label class="fl">Packed by</label><input class="fi" id="sp-by" type="text" placeholder="Your name"></div>
+      <div id="sp-stock-warn" style="display:none;background:var(--crit-bg);border:1.5px solid #F5BDBA;border-radius:var(--rx);padding:10px 14px;margin-bottom:12px;font-size:14px;color:var(--crit)"></div>
+      <button class="btn-p" id="sp-btn" onclick="doSuppPack()" style="background:var(--supp)">Confirm pack</button>
+    </div>
+    <div class="card"><div class="card-label">Recent pack log</div><div id="supppack-log"></div></div>
   </div>
 </div>
 
@@ -450,12 +579,12 @@ body{font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5}
     Supps
   </button>
   <button class="ni" id="n-stock" onclick="nav('stock')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-    Stock
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+    Medicine
   </button>
-  <button class="ni" id="n-people" onclick="nav('people')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    People
+  <button class="ni" id="n-people" onclick="openAddSheet()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Add
   </button>
 </nav>
 </div>
@@ -490,6 +619,14 @@ body{font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5}
     </div>
     <div class="fg"><label class="fl">Current stock</label><input class="fi" id="mm-stock" type="number" placeholder="e.g. 28" min="0"></div>
     <div class="fg"><label class="fl">Minimum threshold</label><input class="fi" id="mm-min" type="number" placeholder="e.g. 14" min="1"></div>
+    <div style="background:var(--parchment2);border:1.5px solid var(--rule);border-radius:var(--rx);padding:14px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">🛒 Purchase info (optional)</div>
+      <div class="fg" style="margin-bottom:12px"><label class="fl">Supplier / pharmacy</label><input class="fi" id="mm-supplier" type="text" placeholder="e.g. NHS, Boots, iHerb"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg" style="margin-bottom:0"><label class="fl">Cost (£)</label><input class="fi" id="mm-cost" type="number" placeholder="e.g. 4.50" min="0" step="0.01"></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Purchase date</label><input class="fi" id="mm-pdate" type="date"></div>
+      </div>
+    </div>
     <div class="mo-btns"><button class="btn-s" onclick="closeMo('m-med')">Cancel</button><button class="btn-p" onclick="saveMed()">Save</button></div>
   </div>
 </div>
@@ -525,6 +662,14 @@ body{font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5}
     <div class="fg"><label class="fl">Current stock (units)</label><input class="fi" id="ms-stock" type="number" placeholder="e.g. 60" min="0"></div>
     <div class="fg"><label class="fl">Minimum threshold</label><input class="fi" id="ms-min" type="number" placeholder="e.g. 14" min="1"></div>
     <div class="fg"><label class="fl">Notes (optional)</label><input class="fi" id="ms-notes" type="text" placeholder="e.g. take with food, after meal"></div>
+    <div style="background:var(--parchment2);border:1.5px solid var(--rule);border-radius:var(--rx);padding:14px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">🛒 Purchase info (optional)</div>
+      <div class="fg" style="margin-bottom:12px"><label class="fl">Supplier / store</label><input class="fi" id="ms-supplier" type="text" placeholder="e.g. iHerb, Holland & Barrett, Amazon"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg" style="margin-bottom:0"><label class="fl">Cost (£)</label><input class="fi" id="ms-cost" type="number" placeholder="e.g. 12.99" min="0" step="0.01"></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Purchase date</label><input class="fi" id="ms-pdate" type="date"></div>
+      </div>
+    </div>
     <div class="mo-btns"><button class="btn-s" onclick="closeMo('m-supp')">Cancel</button><button class="btn-p" onclick="saveSupp()">Save</button></div>
   </div>
 </div>
@@ -538,6 +683,108 @@ body{font-family:var(--sans);color:var(--ink);font-size:16px;line-height:1.5}
     <div class="mo-btns">
       <button class="btn-s" onclick="closeMo('m-del')">Cancel</button>
       <button class="btn-danger" id="m-del-ok" style="flex:1">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add action sheet -->
+<div class="mo" id="m-add-sheet">
+  <div class="mo-box">
+    <div class="mo-handle"></div>
+    <div class="mo-title">Add</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <button class="tile" style="background:var(--blue-light);border-color:var(--blue)" onclick="closeMo('m-add-sheet');openAddPerson()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        <div><div class="tile-label" style="color:var(--blue)">Add person</div><div class="tile-sub">New family member</div></div>
+      </button>
+      <button class="tile" onclick="closeMo('m-add-sheet');nav('people')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div><div class="tile-label">Edit people</div><div class="tile-sub">Manage members</div></div>
+      </button>
+      <button class="tile" style="background:var(--blue-light);border-color:var(--blue)" onclick="closeMo('m-add-sheet');nav('people');setTimeout(()=>document.querySelector('[onclick*=openAddMed]')?.click(),100)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="17" x2="21" y2="17"/><line x1="17.5" y1="14" x2="17.5" y2="21"/></svg>
+        <div><div class="tile-label" style="color:var(--blue)">Add medicine</div><div class="tile-sub">New medication</div></div>
+      </button>
+      <button class="tile" style="background:var(--supp-bg);border-color:var(--supp-border)" onclick="closeMo('m-add-sheet');openAddSupp(null)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--supp)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 1 5 5v3H7V7a5 5 0 0 1 5-5z"/><rect x="3" y="10" width="18" height="11" rx="2"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+        <div><div class="tile-label" style="color:var(--supp)">Add supplement</div><div class="tile-sub">New vitamin/mineral</div></div>
+      </button>
+    </div>
+    <div style="border-top:1.5px solid var(--rule);padding-top:14px;margin-top:4px">
+      <button class="btn-p" style="background:var(--ink2)" onclick="closeMo('m-add-sheet');openMo('m-export')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Export / Import data
+      </button>
+    </div>
+    <button class="btn-s" style="width:100%;margin-top:10px" onclick="closeMo('m-add-sheet')">Cancel</button>
+  </div>
+</div>
+
+<!-- Export / Import -->
+<div class="mo" id="m-export">
+  <div class="mo-box">
+    <div class="mo-handle"></div>
+    <div class="mo-title">Export / Import Data</div>
+    <p style="font-size:14px;color:var(--ink2);margin-bottom:20px">Save your data to transfer between devices, or share a readable summary.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+      <button class="btn-p" onclick="doExport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Export data as JSON (backup)
+      </button>
+      <button class="btn-p" style="background:var(--crit)" onclick="doExportPDF()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Export as PDF (printable report)
+      </button>
+      <button class="btn-s" style="width:100%;padding:14px;font-size:15px" onclick="document.getElementById('import-file').click()">
+        📂 Import from JSON file
+      </button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="doImport(event)">
+    </div>
+    <div id="export-msg" style="font-size:14px;color:var(--ok);text-align:center;min-height:18px;margin-bottom:12px"></div>
+    <button class="btn-s" style="width:100%" onclick="closeMo('m-export')">Close</button>
+  </div>
+</div>
+
+<!-- Discard (med) confirm -->
+<div class="mo" id="m-discard-med">
+  <div class="mo-box">
+    <div class="mo-handle"></div>
+    <div class="mo-title">Discard medicine?</div>
+    <p style="font-size:15px;color:var(--ink2);margin-bottom:8px" id="mdm-name"></p>
+    <div class="fg" style="margin-top:16px"><label class="fl">Quantity to discard</label><input class="fi" id="mdm-qty" type="number" min="1" placeholder="e.g. 5"></div>
+    <div class="fg"><label class="fl">Reason</label>
+      <select class="fs" id="mdm-reason">
+        <option value="Expired">Expired</option>
+        <option value="Damaged">Damaged / Contaminated</option>
+        <option value="Discontinued">Medication discontinued</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="mo-btns">
+      <button class="btn-s" onclick="closeMo('m-discard-med')">Cancel</button>
+      <button class="btn-danger" style="flex:1" onclick="confirmDiscardMed()">Discard</button>
+    </div>
+  </div>
+</div>
+
+<!-- Discard (supp) confirm -->
+<div class="mo" id="m-discard-supp">
+  <div class="mo-box">
+    <div class="mo-handle"></div>
+    <div class="mo-title">Discard supplement?</div>
+    <p style="font-size:15px;color:var(--ink2);margin-bottom:8px" id="mds-name"></p>
+    <div class="fg" style="margin-top:16px"><label class="fl">Quantity to discard</label><input class="fi" id="mds-qty" type="number" min="1" placeholder="e.g. 10"></div>
+    <div class="fg"><label class="fl">Reason</label>
+      <select class="fs" id="mds-reason">
+        <option value="Expired">Expired</option>
+        <option value="Damaged">Damaged / Contaminated</option>
+        <option value="Discontinued">Discontinued</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="mo-btns">
+      <button class="btn-s" onclick="closeMo('m-discard-supp')">Cancel</button>
+      <button class="btn-danger" style="flex:1" onclick="confirmDiscardSupp()">Discard</button>
     </div>
   </div>
 </div>
@@ -638,161 +885,408 @@ function toggleBig(){
 document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'});
 
 // ══════ NAV ══════
-const ALL_PAGES=['home','schedule','pack','stock','supps','people','alerts','batch','log','report'];
+const ALL_PAGES=['home','schedule','stock','supps','people','alerts','batch','log','report'];
 function nav(id){
   ALL_PAGES.forEach(p=>{document.getElementById('pg-'+p)?.classList.toggle('on',p===id);});
   ['home','schedule','supps','stock','people'].forEach(p=>{document.getElementById('n-'+p)?.classList.toggle('on',p===id);});
   document.getElementById('scr').scrollTop=0;
-  const R={home:renderHome,schedule:()=>renderSchedule(S.schedPerson),pack:renderPack,stock:renderStock,supps:renderSupps,people:renderPeople,alerts:renderAlerts,batch:renderBatch,log:renderLog,report:renderReport};
+  const R={home:renderHome,schedule:()=>renderSchedule(S.schedPerson),stock:renderStock,supps:renderSupps,people:renderPeople,alerts:renderAlerts,batch:renderBatch,log:renderLog,report:renderReport};
   if(R[id])R[id]();
 }
 
 // ══════ HOME ══════
 function renderHome(){
   const all=allUniqMeds();
-  const crits=all.filter(m=>m.stock/m.min<=0.6);
-  const lows=all.filter(m=>m.stock/m.min>0.6&&m.stock/m.min<=1.2);
-  const oks=all.filter(m=>m.stock/m.min>1.2);
-  document.getElementById('tc-crit').textContent=crits.length;
-  document.getElementById('tc-low').textContent=lows.length;
-  document.getElementById('tc-ok').textContent=oks.length;
-  const needAttention=[...crits,...lows];
+  const critMeds=all.filter(m=>m.stock/m.min<=0.6);
+  const lowMeds=all.filter(m=>m.stock/m.min>0.6&&m.stock/m.min<=1.2);
+  const okMeds=all.filter(m=>m.stock/m.min>1.2);
+  const critSupps=S.supplements.filter(s=>s.stock/s.min<=0.6);
+  const lowSupps=S.supplements.filter(s=>s.stock/s.min>0.6&&s.stock/s.min<=1.2);
+  const totalCrit=critMeds.length+critSupps.length;
+  const totalLow=lowMeds.length+lowSupps.length;
+  const totalOk=okMeds.length+lowSupps.length;
+
+  document.getElementById('tc-crit').textContent=totalCrit;
+  document.getElementById('tc-low').textContent=totalLow;
+  document.getElementById('tc-ok').textContent=okMeds.length;
   document.getElementById('tc-title').textContent=
-    needAttention.length===0?'All medications well stocked ✓':
-    crits.length>0?`${crits.length} critical — reorder now`:
-    `${lows.length} medication${lows.length>1?'s':''} running low`;
+    totalCrit>0?`${totalCrit} critical — reorder now`:
+    totalLow>0?`${totalLow} item${totalLow>1?'s':''} running low`:
+    'Everything well stocked ✓';
 
-  // Refill list
-  document.getElementById('refill-list').innerHTML=needAttention.length?needAttention.map(m=>{
-    const s=stOf(m);const d=daysLeft(m);
-    return`<div class="stock-row">
-      <div class="stock-dot" style="background:${s.col}"></div>
-      <div class="stock-body"><div class="stock-name">${m.name}</div><div class="stock-days">~${d} days left</div></div>
-      <div class="stock-right"><div class="stock-count">${m.stock}</div><div class="stock-unit">tabs</div><span class="pill ${s.cls}" style="font-size:11px;padding:2px 8px;margin-top:3px;display:block;text-align:center">${s.label}</span></div>
-    </div>`;}).join(''):'<div style="padding:12px 0;color:var(--ink3);font-size:15px">✓ Nothing needs reordering right now</div>';
+  // Medicine alerts
+  const medAlert=[...critMeds,...lowMeds];
+  document.getElementById('home-med-alerts').innerHTML=medAlert.length
+    ? medAlert.map(m=>{
+        const s=stOf(m);const d=daysLeft(m);
+        return`<div class="stock-row" style="cursor:pointer" onclick="nav('stock')">
+          <div class="stock-dot" style="background:${s.col}"></div>
+          <div class="stock-body"><div class="stock-name">${m.name}</div><div class="stock-days">~${d} days left</div></div>
+          <div class="stock-right"><div class="stock-count">${m.stock}</div><div class="stock-unit">tabs</div><span class="pill ${s.cls}" style="font-size:11px;padding:2px 7px;display:block;margin-top:3px;text-align:center">${s.label}</span></div>
+        </div>`;}).join('')
+    : '<div style="padding:10px 0;color:var(--ok);font-size:14px">✓ All medicines well stocked</div>';
 
-  // All stocks
-  document.getElementById('dash-stocks').innerHTML=all.map(m=>{
-    const s=stOf(m);const d=daysLeft(m);
-    return`<div class="stock-row">
-      <div class="stock-dot" style="background:${m.personColor}"></div>
-      <div class="stock-body"><div class="stock-name">${m.name}</div><div class="stock-days">~${d} days left</div></div>
-      <div class="stock-right"><div class="stock-count">${m.stock}</div><div class="stock-unit">tabs</div></div>
-    </div>`;}).join('');
+  // Supplement alerts
+  const suppAlert=[...critSupps,...lowSupps];
+  document.getElementById('home-supp-alerts').innerHTML=suppAlert.length
+    ? suppAlert.map(s=>{
+        const isCrit=s.stock/s.min<=0.6;
+        const days=suppDaysLeft(s);
+        return`<div class="stock-row" style="cursor:pointer" onclick="nav('supps')">
+          <div class="stock-dot" style="background:${isCrit?'var(--crit-dot)':'var(--low-dot)'}"></div>
+          <div class="stock-body"><div class="stock-name">${s.name}</div><div class="stock-days">~${days===999?'∞':days+'d'} left</div></div>
+          <div class="stock-right"><div class="stock-count">${s.stock}</div><div class="stock-unit">units</div><span class="pill ${isCrit?'p-crit':'p-low'}" style="font-size:11px;padding:2px 7px;display:block;margin-top:3px;text-align:center">${isCrit?'Critical':'Low'}</span></div>
+        </div>`;}).join('')
+    : '<div style="padding:10px 0;color:var(--ok);font-size:14px">✓ All supplements well stocked</div>';
 
-  // Alert dot
-  document.getElementById('ndot').style.display=needAttention.length||S.batches.some(b=>b.status!=='ok')?'block':'none';
+  document.getElementById('ndot').style.display=(totalCrit||totalLow||S.batches.some(b=>b.status!=='ok'))?'block':'none';
 }
 
 // ══════ SCHEDULE ══════
+let schedCat='med'; // 'med' or 'supp'
+
+function switchSchedCat(cat){
+  schedCat=cat;
+  document.getElementById('sctab-med').classList.toggle('on',cat==='med');
+  document.getElementById('sctab-supp').classList.toggle('on',cat==='supp');
+  document.getElementById('sched-med-content').style.display=cat==='med'?'':'none';
+  document.getElementById('sched-supp-content').style.display=cat==='supp'?'':'none';
+}
+
 function renderSchedule(pi){
-  S.schedPerson=pi;
+  if(pi!==undefined)S.schedPerson=pi;
+  const pi2=S.schedPerson;
+
+  // Person tabs
   document.getElementById('sched-tabs').innerHTML=
-    S.people.map((p,i)=>`<button class="ptab${i===pi?' on':''}" onclick="renderSchedule(${i})"><span class="ptab-name">${p.name}</span><span class="ptab-role">${p.role}</span></button>`).join('')+
-    `<button class="ptab ptab-add" onclick="nav('people')"><span>＋</span><small>Add</small></button>`;
-  const p=S.people[pi];
-  if(!p){document.getElementById('sched-content').innerHTML='';return;}
-  const secs=[{k:'day',l:'☀️ Morning / Day'},{k:'night',l:'🌙 Night'},{k:'optional',l:'💊 Optional'}];
-  document.getElementById('sched-content').innerHTML=secs.map(s=>{
+    S.people.map((p,i)=>`<button class="ptab${i===pi2?' on':''}" onclick="renderSchedule(${i})"><span class="ptab-name">${p.name}</span><span class="ptab-role">${p.role}</span></button>`).join('')+
+    `<button class="ptab ptab-add" onclick="openAddSheet()"><span>＋</span><small>Add</small></button>`;
+
+  const p=S.people[pi2];
+  if(!p){
+    document.getElementById('sched-med-content').innerHTML='';
+    document.getElementById('sched-supp-content').innerHTML='';
+    return;
+  }
+
+  // ── Medicine schedule ──
+  const medSecs=[
+    {k:'day',   l:'☀️ Morning / Day',   col:'var(--blue)'},
+    {k:'night', l:'🌙 Night',            col:'var(--supp)'},
+    {k:'optional',l:'💊 Optional / As needed', col:'var(--ink3)'}
+  ];
+  const medHtml=medSecs.map(s=>{
     const meds=p.meds.filter(m=>m.session===s.k);
     if(!meds.length)return'';
-    return`<div class="card">
-      <div class="sec-head">${s.l}</div>
-      ${meds.map(m=>{const st=stOf(m);return`<div class="tick" onclick="this.classList.toggle('done');this.querySelector('.tick-box').innerHTML=this.classList.contains('done')?'✓':''">
-        <div class="tick-box"></div>
-        <div style="flex:1;min-width:0"><div class="tn">${m.name}</div><div class="td">${m.dose} · <span class="pill ${st.cls}" style="font-size:12px;padding:2px 8px">${m.stock} left</span></div></div>
-      </div>`;}).join('')}
-    </div>`;}).join('');
-}
-
-// ══════ PACK ══════
-function renderPack(){
-  document.getElementById('pk-person').innerHTML=S.people.map(p=>`<option value="${p.id}">${p.name} — ${p.role}</option>`).join('');
-  updatePackDrugs();
-  const entries=S.log.filter(l=>l.action==='Pack');
-  document.getElementById('pack-log').innerHTML=entries.length?entries.map(l=>`<div class="log-row"><div class="log-hd"><span class="log-t">${l.drug}</span><span class="log-time">${l.date}</span></div><div class="log-d">For: ${l.person} · By: ${l.by} · ${l.detail}</div></div>`).join(''):'<div style="padding:12px 0;color:var(--ink3)">No packing records yet</div>';
-}
-function updatePackDrugs(){
-  const pid=parseInt(document.getElementById('pk-person').value);
-  const p=S.people.find(x=>x.id===pid);
-  document.getElementById('pk-drug').innerHTML=(p?p.meds:[]).map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
-}
-function doPack(){
-  const pid=parseInt(document.getElementById('pk-person').value);
-  const mid=parseInt(document.getElementById('pk-drug').value);
-  const qty=parseInt(document.getElementById('pk-qty').value)||0;
-  const by=document.getElementById('pk-by').value||'Unknown';
-  const batch=document.getElementById('pk-batch').value||'—';
-  const p=S.people.find(x=>x.id===pid);const m=p?.meds.find(x=>x.id===mid);
-  if(m&&qty>0){
-    m.stock=Math.max(0,m.stock-qty);
-    const now=new Date();
-    S.log.unshift({action:'Pack',drug:m.name,person:p.name,by,date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),detail:`${qty} tabs · Batch ${batch}`});
-  }
-  const btn=document.getElementById('pk-btn');
-  btn.textContent='✓ Packed!';btn.style.background='var(--ok)';
-  setTimeout(()=>{btn.textContent='Confirm pack';btn.style.background='';renderPack();},2000);
-}
-
-// ══════ STOCK ══════
-function renderStock(){
-  const all=allUniqMeds();
-  document.getElementById('st-drug').innerHTML=all.map(m=>`<option>${m.name}</option>`).join('');
-  document.getElementById('st-list').innerHTML=S.people.map(p=>{
-    const uniqs=[...new Map(p.meds.map(m=>[m.name,m])).values()];
-    return`<div style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ink3);margin-bottom:8px">
-        <div style="width:9px;height:9px;border-radius:50%;background:${p.color}"></div>${p.name}
+    return`<div class="card" style="margin-bottom:12px">
+      <div class="sec-head" style="color:${s.col}">${s.l}
+        <span style="font-size:11px;font-weight:600;color:var(--ink3);margin-left:auto">${meds.length} item${meds.length>1?'s':''}</span>
       </div>
-      ${uniqs.map(m=>{const s=stOf(m);return`<div class="stock-row">
-        <div class="stock-dot" style="background:${s.col}"></div>
-        <div class="stock-body"><div class="stock-name">${m.name}</div><div class="stock-days">Min: ${m.min} · ~${daysLeft(m)} days</div></div>
-        <div class="stock-right"><div class="stock-count">${m.stock}</div><div class="stock-unit">tabs</div><span class="pill ${s.cls}" style="font-size:11px;padding:2px 7px;display:block;margin-top:3px;text-align:center">${s.label}</span></div>
-        <button class="ic-btn" onclick="openEditMed(${p.id},${m.id})" title="Edit">✏️</button>
-      </div>`;}).join('')}
+      ${meds.map(m=>{
+        const st=stOf(m);
+        return`<div class="tick" onclick="toggleTick(this)">
+          <div class="tick-box"></div>
+          <div style="flex:1;min-width:0">
+            <div class="tn">${m.name}</div>
+            <div class="td">${m.dose} · <span class="pill ${st.cls}" style="font-size:12px;padding:2px 8px">${m.stock} left</span> · ~${daysLeft(m)}d</div>
+          </div>
+          ${m.supplier?`<div style="font-size:11px;color:var(--ink3);flex-shrink:0;text-align:right">${m.supplier}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+  document.getElementById('sched-med-content').innerHTML=medHtml||
+    `<div class="card"><div style="text-align:center;padding:20px;color:var(--ink3)">
+      <div style="font-size:28px;margin-bottom:8px">💊</div>
+      <div style="font-size:15px;font-weight:600">${p.name} has no medicines yet</div>
+      <button class="btn-s" style="margin-top:12px" onclick="openAddMed(${p.id})">+ Add medicine</button>
+    </div></div>`;
+
+  // ── Supplement schedule ──
+  const suppSecs=[
+    {keys:['morning','daily','twice'], l:'☀️ Morning / Daily'},
+    {keys:['night'],                   l:'🌙 Night'},
+    {keys:['weekly'],                  l:'📅 Weekly'},
+    {keys:['asneeded'],               l:'💊 As needed'}
+  ];
+  const personSupps=S.supplements.filter(s=>s.personId===p.id);
+  const suppHtml=suppSecs.map(s=>{
+    const items=personSupps.filter(x=>s.keys.includes(x.freq));
+    if(!items.length)return'';
+    const isCritSec=items.some(x=>x.stock/x.min<=0.6);
+    const isLowSec=items.some(x=>x.stock/x.min<=1.2);
+    const secCol=isCritSec?'var(--crit)':isLowSec?'var(--low)':'var(--supp)';
+    return`<div class="card" style="margin-bottom:12px">
+      <div class="sec-head" style="color:${secCol}">${s.l}
+        <span style="font-size:11px;font-weight:600;color:var(--ink3);margin-left:auto">${items.length} item${items.length>1?'s':''}</span>
+      </div>
+      ${items.map(item=>{
+        const isCrit=item.stock/item.min<=0.6;
+        const isLow=item.stock/item.min<=1.2;
+        const cls=isCrit?'p-crit':isLow?'p-low':'p-supp';
+        const statusTxt=isCrit?'Critical':isLow?'Low':'OK';
+        const days=suppDaysLeft(item);
+        return`<div class="tick" onclick="toggleTick(this)">
+          <div class="tick-box"></div>
+          <div style="flex:1;min-width:0">
+            <div class="tn">${CAT_EMOJI[item.cat]||'📦'} ${item.name}</div>
+            <div class="td">${item.dose} · <span class="pill ${cls}" style="font-size:12px;padding:2px 8px">${item.stock} left</span> · ~${days===999?'∞':days+'d'}</div>
+            ${item.notes?`<div class="td" style="color:var(--ink3);font-size:12px;margin-top:2px">📝 ${item.notes}</div>`:''}
+          </div>
+          ${item.supplier?`<div style="font-size:11px;color:var(--ink3);flex-shrink:0;text-align:right;max-width:80px;word-break:break-word">${item.supplier}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+  document.getElementById('sched-supp-content').innerHTML=suppHtml||
+    `<div class="card"><div style="text-align:center;padding:20px;color:var(--ink3)">
+      <div style="font-size:28px;margin-bottom:8px">🌿</div>
+      <div style="font-size:15px;font-weight:600">${p.name} has no supplements yet</div>
+      <button class="btn-s" style="margin-top:12px" onclick="openAddSupp(${p.id})">+ Add supplement</button>
+    </div></div>`;
+
+  // apply current category visibility
+  switchSchedCat(schedCat);
+}
+
+function toggleTick(el){
+  el.classList.toggle('done');
+  el.querySelector('.tick-box').innerHTML=el.classList.contains('done')?'✓':'';
+}
+
+
+// ══════ MEDICINE PAGE (3-tab) ══════
+let medActiveTab='list';
+
+function switchMedTab(tab){
+  medActiveTab=tab;
+  ['list','stockin','pack'].forEach(t=>{
+    document.getElementById('mtab-'+t).classList.toggle('on',t===tab);
+    document.getElementById('mtab-panel-'+t).style.display=t===tab?'':'none';
+  });
+  if(tab==='stockin') renderMedStockInPanel();
+  if(tab==='pack')    renderMedPackPanel();
+  if(tab==='list')    renderMedList();
+}
+
+function renderStock(){
+  // hero
+  const all=allUniqMeds();
+  const crits=all.filter(m=>m.stock/m.min<=0.6);
+  const lows=all.filter(m=>m.stock/m.min>0.6&&m.stock/m.min<=1.2);
+  const avgD=all.length?Math.round(all.reduce((a,m)=>a+daysLeft(m),0)/all.length):0;
+  document.getElementById('mh-total').textContent=all.length;
+  document.getElementById('mh-crit').textContent=crits.length+lows.length;
+  document.getElementById('mh-days').textContent=avgD||'—';
+  document.getElementById('mh-title').textContent=
+    crits.length>0?`${crits.length} critical — reorder now`:
+    lows.length>0?`${lows.length} running low`:
+    'All medicines well stocked ✓';
+
+  // re-apply tab visibility
+  ['list','stockin','pack'].forEach(t=>{
+    document.getElementById('mtab-panel-'+t).style.display=t===medActiveTab?'':'none';
+  });
+  document.getElementById('mtab-'+medActiveTab).classList.add('on');
+
+  // person tabs
+  const medPersonIdx=parseInt(document.getElementById('med-tabs')?.dataset?.idx||'0');
+  renderMedList(medPersonIdx);
+}
+
+let medPersonIdx=0;
+function renderMedList(idx){
+  if(idx!==undefined)medPersonIdx=idx;
+  document.getElementById('med-tabs').dataset.idx=medPersonIdx;
+  document.getElementById('med-tabs').innerHTML=
+    S.people.map((p,i)=>`<button class="ptab${i===medPersonIdx?' on':''}" onclick="renderMedList(${i})"><span class="ptab-name">${p.name}</span><span class="ptab-role">${p.role}</span></button>`).join('')+
+    `<button class="ptab ptab-add" onclick="openAddSheet()"><span>＋</span><small>Add</small></button>`;
+  const p=S.people[medPersonIdx];
+  if(!p){document.getElementById('med-person-content').innerHTML='';return;}
+  const secs=[{k:'day',l:'☀️ Morning / Day'},{k:'night',l:'🌙 Night'},{k:'optional',l:'💊 Optional / As needed'}];
+  let html='';
+  secs.forEach(s=>{
+    const meds=p.meds.filter(m=>m.session===s.k);
+    if(!meds.length)return;
+    html+=`<div class="card" style="margin-bottom:12px"><div class="sec-head">${s.l}</div>`;
+    meds.forEach(m=>{
+      const st=stOf(m);const d=daysLeft(m);const isCrit=m.stock/m.min<=0.6;const isLow=m.stock/m.min<=1.2;
+      const progW=Math.min(100,Math.round(m.stock/Math.max(m.min*2,1)*100));
+      html+=`<div class="supp-row">
+        <div class="supp-icon" style="background:var(--blue-light);font-size:14px;color:var(--blue);font-weight:700">${m.dose.replace(' pill','').replace(' pcs','')}</div>
+        <div class="supp-body">
+          <div class="supp-name">${m.name}</div>
+          <div class="supp-meta">${m.dose}${m.session!=='optional'?' · '+s.l.split(' ').slice(1).join(' '):''}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+            <div class="supp-prog" style="flex:1"><div class="supp-fill" style="width:${progW}%;background:${isCrit?'var(--crit-dot)':isLow?'var(--low-dot)':'var(--blue)'}"></div></div>
+            <span class="days-badge ${isCrit?'crit':isLow?'low':''}">~${d}d</span>
+          </div>
+        </div>
+        <div class="supp-right">
+          <div class="supp-count">${m.stock}</div>
+          <div class="supp-unit">tabs</div>
+          <span class="pill ${st.cls}" style="font-size:11px;padding:2px 7px;display:block;margin-top:3px;text-align:center">${st.label}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;margin-left:6px">
+          <button class="ic-btn" title="Discard" onclick="openDiscardMed(${p.id},${m.id})">🗑️</button>
+          <button class="ic-btn" title="Edit" onclick="openEditMed(${p.id},${m.id})">✏️</button>
+          <button class="ic-btn" title="Delete" onclick="confirmDel('Remove <b>${m.name}</b>?',()=>{const pp=S.people.find(x=>x.id===${p.id});if(pp)pp.meds=pp.meds.filter(x=>x.id!==${m.id});renderStock();renderHome();})">❌</button>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('med-person-content').innerHTML=html||`<div class="card" style="margin-bottom:12px;text-align:center;padding:20px;color:var(--ink3)"><div style="font-size:28px;margin-bottom:8px">💊</div><div style="font-size:15px;font-weight:600">${p.name} has no medicines yet</div><button class="btn-s" style="margin-top:12px" onclick="openAddMed(${p.id})">+ Add medicine</button></div>`;
+
+  // All list
+  const all=allUniqMeds();
+  document.getElementById('med-all-count').textContent=all.length+' items';
+  document.getElementById('med-all-list').innerHTML=all.map(m=>{
+    const st=stOf(m);const d=daysLeft(m);const isCrit=m.stock/m.min<=0.6;const isLow=m.stock/m.min<=1.2;
+    return`<div class="stock-row">
+      <div class="stock-dot" style="background:${m.personColor}"></div>
+      <div class="stock-body"><div class="stock-name">${m.name}</div><div class="stock-days">~${d} days left</div></div>
+      <div class="stock-right"><div class="stock-count">${m.stock}</div><div class="stock-unit">tabs</div><span class="pill ${st.cls}" style="font-size:11px;padding:2px 7px;display:block;margin-top:3px;text-align:center">${st.label}</span></div>
     </div>`;}).join('');
+}
+
+// ── Med Stock In panel ──
+function renderMedStockInPanel(){
+  const all=allUniqMeds();
+  document.getElementById('st-drug').innerHTML=all.map(m=>`<option value="${m.name}">${m.name} (${m.stock} tabs)</option>`).join('');
+  const entries=S.log.filter(l=>l.action==='Stock in');
+  document.getElementById('st-log').innerHTML=entries.slice(0,8).map(l=>`<div class="log-row"><div class="log-hd"><span class="log-t">${l.drug}</span><span class="log-time">${l.date}</span></div><div class="log-d">${l.detail}</div></div>`).join('')||'<div style="padding:12px 0;color:var(--ink3)">No stock-in records yet</div>';
 }
 function doStock(){
   const drug=document.getElementById('st-drug').value;
   const qty=parseInt(document.getElementById('st-qty').value)||0;
   const batch=document.getElementById('st-batch').value||'—';
   const exp=document.getElementById('st-exp').value||'—';
+  const src=document.getElementById('st-src').value.trim()||'—';
   if(qty>0){
     S.people.forEach(p=>p.meds.filter(m=>m.name===drug).forEach(m=>m.stock+=qty));
-    S.log.unshift({action:'Stock in',drug,person:'—',by:'—',date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'}),detail:`${qty} tabs · Batch ${batch} · Exp ${exp}`});
+    const now=new Date();
+    S.log.unshift({action:'Stock in',drug,person:'—',by:'User',date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),detail:`+${qty} tabs · ${src}${batch!=='—'?' · Batch '+batch:''}${exp!=='—'?' · Exp '+exp:''}`});
     if(batch!=='—')S.batches.unshift({drug,batch,exp,qty,status:'ok'});
+    ['st-qty','st-batch','st-exp','st-src'].forEach(id=>document.getElementById(id).value='');
   }
   const btn=document.getElementById('st-btn');
   btn.textContent='✓ Added!';btn.style.background='var(--ok)';
-  setTimeout(()=>{btn.textContent='Add to stock';btn.style.background='';renderStock();},2000);
+  setTimeout(()=>{btn.textContent='Add to stock';btn.style.background='';renderMedStockInPanel();renderStock();renderHome();},2000);
 }
 
-// ══════ SUPPLEMENTS ══════
+// ── Med Pack panel ──
+function renderMedPackPanel(){
+  document.getElementById('pk-person').innerHTML=S.people.map(p=>`<option value="${p.id}">${p.name} — ${p.role}</option>`).join('');
+  updatePackDrugs();
+  const entries=S.log.filter(l=>l.action==='Pack');
+  document.getElementById('pack-log').innerHTML=entries.slice(0,8).map(l=>`<div class="log-row"><div class="log-hd"><span class="log-t">${l.drug}</span><span class="log-time">${l.date}</span></div><div class="log-d">For: ${l.person} · By: ${l.by} · ${l.detail}</div></div>`).join('')||'<div style="padding:12px 0;color:var(--ink3)">No pack records yet</div>';
+}
+function updatePackDrugs(){
+  const pid=parseInt(document.getElementById('pk-person').value);
+  const p=S.people.find(x=>x.id===pid);
+  document.getElementById('pk-drug').innerHTML=(p?p.meds:[]).map(m=>`<option value="${m.id}">${m.name} (${m.stock} left)</option>`).join('');
+  updatePackPreview();
+}
+function updatePackPreview(){
+  const pid=parseInt(document.getElementById('pk-person').value);
+  const mid=parseInt(document.getElementById('pk-drug').value);
+  const qty=parseInt(document.getElementById('pk-qty').value)||0;
+  const p=S.people.find(x=>x.id===pid);const m=p?.meds.find(x=>x.id===mid);
+  const preview=document.getElementById('pk-preview');
+  const warn=document.getElementById('pk-warn');
+  if(!m){preview.style.display='none';return;}
+  const remaining=m.stock-qty;
+  preview.style.display='';
+  document.getElementById('pk-preview-text').innerHTML=
+    `Stock: <b>${m.stock} tabs</b> · Min threshold: ${m.min} · ~${daysLeft(m)} days left<br>`+
+    (qty>0?`<span style="color:${remaining<0?'var(--crit)':remaining<m.min?'var(--low)':'var(--ok)'}">After packing: <b>${Math.max(0,remaining)} tabs remaining</b>${remaining<0?' — ⚠️ not enough!':''}</span>`:'');
+  warn.style.display=qty>0&&remaining<0?'':'none';
+  if(qty>0&&remaining<0)warn.textContent=`⚠️ Only ${m.stock} tabs available. Cannot pack ${qty}.`;
+}
+function doPack(){
+  const pid=parseInt(document.getElementById('pk-person').value);
+  const mid=parseInt(document.getElementById('pk-drug').value);
+  const qty=parseInt(document.getElementById('pk-qty').value)||0;
+  const by=document.getElementById('pk-by').value||'User';
+  const batch=document.getElementById('pk-batch').value||'—';
+  const p=S.people.find(x=>x.id===pid);const m=p?.meds.find(x=>x.id===mid);
+  if(!m||qty<=0)return;
+  if(m.stock<qty){document.getElementById('pk-warn').style.display='';document.getElementById('pk-warn').textContent=`⚠️ Only ${m.stock} tabs in stock.`;return;}
+  m.stock=Math.max(0,m.stock-qty);
+  const now=new Date();
+  S.log.unshift({action:'Pack',drug:m.name,person:p.name,by,date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),detail:`${qty} tabs · Batch ${batch}`});
+  ['pk-qty','pk-dose','pk-batch','pk-by'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pk-preview').style.display='none';
+  const btn=document.getElementById('pk-btn');
+  btn.textContent='✓ Packed!';btn.style.background='var(--ok)';
+  setTimeout(()=>{btn.textContent='Confirm pack';btn.style.background='';renderMedPackPanel();renderStock();renderHome();},2000);
+}
+
+// ── openAddSheet ──
+function openAddSheet(){openMo('m-add-sheet');}
+
+
+// ══════ SUPPLEMENTS (full automation) ══════
+// Units consumed per day by frequency
+const FREQ_PER_DAY={daily:1,twice:2,morning:1,night:1,weekly:1/7,asneeded:0.5};
+function suppDaysLeft(s){
+  const rate=FREQ_PER_DAY[s.freq]||1;
+  if(rate===0)return 999;
+  return Math.floor(s.stock/rate);
+}
+function suppAutoQty(s,days){
+  const rate=FREQ_PER_DAY[s.freq]||1;
+  return Math.ceil(rate*days);
+}
+
 let suppPersonIdx=0;
+let suppActiveTab='list';
+
+function switchSuppTab(tab){
+  suppActiveTab=tab;
+  ['list','stockin','pack'].forEach(t=>{
+    document.getElementById('stab-'+t).classList.toggle('on',t===tab);
+    document.getElementById('stab-panel-'+t).style.display=t===tab?'':'none';
+  });
+  if(tab==='stockin') renderSuppStockInPanel();
+  if(tab==='pack')    renderSuppPackPanel();
+}
+
 function renderSupps(){
   // hero stats
-  const lowS=S.supplements.filter(s=>s.stock/s.min<=1.2);
-  const okS=S.supplements.filter(s=>s.stock/s.min>1.2);
+  const low=S.supplements.filter(s=>s.stock/s.min<=1.2);
+  const avgDays=S.supplements.length
+    ? Math.round(S.supplements.reduce((a,s)=>a+suppDaysLeft(s),0)/S.supplements.length)
+    : 0;
   document.getElementById('sh-total').textContent=S.supplements.length;
-  document.getElementById('sh-low').textContent=lowS.length;
-  document.getElementById('sh-ok').textContent=okS.length;
+  document.getElementById('sh-low').textContent=low.length;
+  document.getElementById('sh-days').textContent=avgDays||'—';
   document.getElementById('sh-title').textContent=
-    lowS.length===0?'All supplements well stocked ✓':
-    `${lowS.length} supplement${lowS.length>1?'s':''} running low`;
+    low.length===0?'All supplements well stocked ✓':
+    `${low.length} supplement${low.length>1?'s':''} need replenishment`;
 
-  // person tabs
+  // person tabs (only shown on list panel)
   document.getElementById('supp-tabs').innerHTML=
     S.people.map((p,i)=>`<button class="ptab${i===suppPersonIdx?' on':''}" onclick="switchSuppPerson(${i})"><span class="ptab-name">${p.name}</span><span class="ptab-role">${p.role}</span></button>`).join('')+
     `<button class="ptab ptab-add" onclick="openAddSupp(null)"><span>＋</span><small>New</small></button>`;
 
   renderSuppPerson();
   renderSuppAll();
+
+  // re-apply active tab display
+  ['list','stockin','pack'].forEach(t=>{
+    document.getElementById('stab-panel-'+t).style.display=t===suppActiveTab?'':'none';
+  });
+  document.getElementById('stab-'+suppActiveTab).classList.add('on');
 }
+
 function switchSuppPerson(i){
   suppPersonIdx=i;
   document.querySelectorAll('#supp-tabs .ptab:not(.ptab-add)').forEach((t,j)=>t.classList.toggle('on',j===i));
   renderSuppPerson();
 }
+
 function renderSuppPerson(){
   const p=S.people[suppPersonIdx];
   if(!p){document.getElementById('supp-person-content').innerHTML='';return;}
@@ -807,7 +1301,6 @@ function renderSuppPerson(){
     </div>`;
     return;
   }
-  // group by category
   const byCat={};
   supps.forEach(s=>{if(!byCat[s.cat])byCat[s.cat]=[];byCat[s.cat].push(s);});
   let html=`<div class="card" style="margin-bottom:12px">
@@ -819,14 +1312,19 @@ function renderSuppPerson(){
   Object.entries(byCat).forEach(([cat,items])=>{
     html+=`<div class="supp-cat-head">${CAT_EMOJI[cat]||'📦'} ${cat.charAt(0).toUpperCase()+cat.slice(1)}</div>`;
     items.forEach(s=>{
-      const isLow=s.stock/s.min<=1.2;const isCrit=s.stock/s.min<=0.6;
+      const isCrit=s.stock/s.min<=0.6;const isLow=s.stock/s.min<=1.2;
+      const days=suppDaysLeft(s);
       const progW=Math.min(100,Math.round(s.stock/Math.max(s.min*2,1)*100));
+      const daysCls=isCrit?'crit':isLow?'low':'';
       html+=`<div class="supp-row">
         <div class="supp-icon">${CAT_EMOJI[s.cat]||'📦'}</div>
         <div class="supp-body">
           <div class="supp-name">${s.name}</div>
           <div class="supp-meta">${s.dose} · ${FREQ_LABEL[s.freq]||s.freq}${s.notes?' · '+s.notes:''}</div>
-          <div class="supp-prog"><div class="supp-fill" style="width:${progW}%;background:${isCrit?'var(--crit-dot)':isLow?'var(--low-dot)':'var(--supp)'}"></div></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+            <div class="supp-prog" style="flex:1"><div class="supp-fill" style="width:${progW}%;background:${isCrit?'var(--crit-dot)':isLow?'var(--low-dot)':'var(--supp)'}"></div></div>
+            <span class="days-badge ${daysCls}">~${days===999?'∞':days+'d'}</span>
+          </div>
         </div>
         <div class="supp-right">
           <div class="supp-count">${s.stock}</div>
@@ -834,8 +1332,9 @@ function renderSuppPerson(){
           <span class="pill ${isCrit?'p-crit':isLow?'p-low':'p-supp'}" style="font-size:11px;padding:2px 7px;display:block;margin-top:3px;text-align:center">${isCrit?'Critical':isLow?'Low':'OK'}</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;margin-left:6px">
-          <button class="ic-btn" onclick="openEditSupp(${s.id})">✏️</button>
-          <button class="ic-btn" onclick="confirmDel('Remove <b>${s.name}</b>?',()=>{S.supplements=S.supplements.filter(x=>x.id!==${s.id});renderSupps();})">🗑️</button>
+          <button class="ic-btn" title="Discard" onclick="openDiscardSupp(${s.id})">🗑️</button>
+          <button class="ic-btn" title="Edit" onclick="openEditSupp(${s.id})">✏️</button>
+          <button class="ic-btn" title="Delete" onclick="confirmDel('Remove <b>${s.name}</b>?',()=>{S.supplements=S.supplements.filter(x=>x.id!==${s.id});renderSupps();})">❌</button>
         </div>
       </div>`;
     });
@@ -843,40 +1342,141 @@ function renderSuppPerson(){
   html+='</div>';
   document.getElementById('supp-person-content').innerHTML=html;
 }
+
 function renderSuppAll(){
   if(!S.supplements.length){
-    document.getElementById('supp-all-list').innerHTML='<div style="padding:12px 0;color:var(--ink3);font-size:15px">No supplements added yet. Use + Add to get started.</div>';
+    document.getElementById('supp-all-list').innerHTML='<div style="padding:12px 0;color:var(--ink3);font-size:15px">No supplements added yet. Tap + Add to get started.</div>';
     return;
   }
   document.getElementById('supp-all-list').innerHTML=S.supplements.map(s=>{
     const p=S.people.find(x=>x.id===s.personId);
-    const isLow=s.stock/s.min<=1.2;const isCrit=s.stock/s.min<=0.6;
+    const isCrit=s.stock/s.min<=0.6;const isLow=s.stock/s.min<=1.2;
+    const days=suppDaysLeft(s);
+    const daysCls=isCrit?'crit':isLow?'low':'';
     return`<div class="supp-row">
       <div class="supp-icon">${CAT_EMOJI[s.cat]||'📦'}</div>
       <div class="supp-body">
         <div class="supp-name">${s.name}</div>
         <div class="supp-meta">${p?p.name:'?'} · ${s.dose} · ${FREQ_LABEL[s.freq]||s.freq}</div>
+        <span class="days-badge ${daysCls}" style="margin-top:4px">~${days===999?'∞':days+'d left'}</span>
       </div>
       <div class="supp-right">
         <div class="supp-count">${s.stock}</div>
         <div class="supp-unit">units</div>
         <span class="pill ${isCrit?'p-crit':isLow?'p-low':'p-supp'}" style="font-size:11px;padding:2px 7px;display:block;margin-top:3px;text-align:center">${isCrit?'Critical':isLow?'Low':'OK'}</span>
       </div>
-      <button class="ic-btn" onclick="openEditSupp(${s.id})" title="Edit">✏️</button>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;margin-left:6px">
+        <button class="ic-btn" title="Discard" onclick="openDiscardSupp(${s.id})">🗑️</button>
+        <button class="ic-btn" title="Edit" onclick="openEditSupp(${s.id})">✏️</button>
+        <button class="ic-btn" title="Delete" onclick="confirmDel('Remove <b>${s.name}</b>?',()=>{S.supplements=S.supplements.filter(x=>x.id!==${s.id});renderSupps();})">❌</button>
+      </div>
     </div>`;}).join('');
+}
+
+// ── Stock In panel ──
+function renderSuppStockInPanel(){
+  document.getElementById('ssi-person').innerHTML=S.people.map(p=>`<option value="${p.id}">${p.name} — ${p.role}</option>`).join('');
+  updateSuppStockItems();
+  const entries=S.log.filter(l=>l.action==='Supp Stock');
+  document.getElementById('ssi-log').innerHTML=entries.slice(0,8).map(l=>`<div class="log-row"><div class="log-hd"><span class="log-t">${l.drug}</span><span class="log-time">${l.date}</span></div><div class="log-d">For: ${l.person} · ${l.detail}</div></div>`).join('')||'<div style="padding:12px 0;color:var(--ink3)">No stock-in records yet</div>';
+}
+function updateSuppStockItems(){
+  const pid=parseInt(document.getElementById('ssi-person').value);
+  const supps=S.supplements.filter(s=>s.personId===pid);
+  document.getElementById('ssi-item').innerHTML=supps.map(s=>`<option value="${s.id}">${s.name} (currently ${s.stock} units)</option>`).join('')||'<option disabled>No supplements — add via List tab first</option>';
+}
+function doSuppStockIn(){
+  const pid=parseInt(document.getElementById('ssi-person').value);
+  const sid=parseInt(document.getElementById('ssi-item').value);
+  const qty=parseInt(document.getElementById('ssi-qty').value)||0;
+  const exp=document.getElementById('ssi-exp').value||'—';
+  const src=document.getElementById('ssi-src').value.trim()||'—';
+  const p=S.people.find(x=>x.id===pid);
+  const s=S.supplements.find(x=>x.id===sid);
+  if(s&&qty>0){
+    s.stock+=qty;
+    const now=new Date();
+    S.log.unshift({action:'Supp Stock',drug:s.name,person:p?.name||'?',by:'User',date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),detail:`+${qty} units · ${src}${exp!=='—'?' · Exp '+exp:''}`});
+    ['ssi-qty','ssi-exp','ssi-src'].forEach(id=>document.getElementById(id).value='');
+  }
+  const btn=document.getElementById('ssi-btn');
+  btn.textContent='✓ Stock added!';btn.style.background='var(--ok)';
+  setTimeout(()=>{btn.textContent='Add to stock';btn.style.background='var(--supp)';renderSuppStockInPanel();renderSupps();renderHome();},2000);
+}
+
+// ── Pack panel ──
+function renderSuppPackPanel(){
+  document.getElementById('sp-person').innerHTML=S.people.map(p=>`<option value="${p.id}">${p.name} — ${p.role}</option>`).join('');
+  updateSuppPackItems();
+  const entries=S.log.filter(l=>l.action==='Supp Pack');
+  document.getElementById('supppack-log').innerHTML=entries.slice(0,8).map(l=>`<div class="log-row"><div class="log-hd"><span class="log-t">${l.drug}</span><span class="log-time">${l.date}</span></div><div class="log-d">For: ${l.person} · By: ${l.by} · ${l.detail}</div></div>`).join('')||'<div style="padding:12px 0;color:var(--ink3)">No pack records yet</div>';
+}
+function updateSuppPackItems(){
+  const pid=parseInt(document.getElementById('sp-person').value);
+  const supps=S.supplements.filter(s=>s.personId===pid);
+  document.getElementById('sp-item').innerHTML=supps.map(s=>`<option value="${s.id}">${s.name} (${s.stock} units left)</option>`).join('')||'<option disabled>No supplements for this person</option>';
+  updateSuppPackPreview();
+}
+function updateSuppPackPreview(){
+  const sid=parseInt(document.getElementById('sp-item').value);
+  const dur=document.getElementById('sp-duration').value;
+  const isCustom=dur==='custom';
+  document.getElementById('sp-custom-qty-fg').style.display=isCustom?'':'none';
+  const s=S.supplements.find(x=>x.id===sid);
+  const preview=document.getElementById('sp-preview');
+  const warn=document.getElementById('sp-stock-warn');
+  if(!s){preview.style.display='none';return;}
+  if(!isCustom){
+    const days=parseInt(dur);
+    const auto=suppAutoQty(s,days);
+    const remaining=s.stock-auto;
+    preview.style.display='';
+    document.getElementById('sp-preview-text').innerHTML=
+      `<b>${auto} units</b> needed for ${days} days · ${FREQ_LABEL[s.freq]} · ${s.dose}<br>`+
+      `<span style="color:${remaining<0?'var(--crit)':remaining<s.min?'var(--low)':'var(--ok)'}">After packing: <b>${Math.max(0,remaining)} units remaining</b>${remaining<0?' — ⚠️ not enough stock!':''}</span>`;
+    warn.style.display=remaining<0?'':'none';
+    if(remaining<0)warn.textContent=`⚠️ Only ${s.stock} units in stock but ${auto} needed. Top up first.`;
+  } else {
+    preview.style.display='none';
+    warn.style.display='none';
+  }
+}
+function doSuppPack(){
+  const pid=parseInt(document.getElementById('sp-person').value);
+  const sid=parseInt(document.getElementById('sp-item').value);
+  const dur=document.getElementById('sp-duration').value;
+  const by=document.getElementById('sp-by').value||'User';
+  const p=S.people.find(x=>x.id===pid);
+  const s=S.supplements.find(x=>x.id===sid);
+  if(!s)return;
+  const qty=dur==='custom'
+    ? parseInt(document.getElementById('sp-qty').value)||0
+    : suppAutoQty(s,parseInt(dur));
+  if(qty<=0)return;
+  if(s.stock<qty){
+    document.getElementById('sp-stock-warn').style.display='';
+    document.getElementById('sp-stock-warn').textContent=`⚠️ Only ${s.stock} units in stock. Cannot pack ${qty} units.`;
+    return;
+  }
+  s.stock=Math.max(0,s.stock-qty);
+  const now=new Date();
+  const label=dur==='custom'?`${qty} units (custom)`:
+    `${qty} units (${dur}d supply)`;
+  S.log.unshift({action:'Supp Pack',drug:s.name,person:p?.name||'?',by,date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),detail:label});
+  document.getElementById('sp-by').value='';
+  const btn=document.getElementById('sp-btn');
+  btn.textContent='✓ Packed!';btn.style.background='var(--ok)';
+  setTimeout(()=>{btn.textContent='Confirm pack';btn.style.background='var(--supp)';renderSuppPackPanel();renderSupps();renderHome();},2000);
 }
 
 // Supplement modal
 function openAddSupp(personId){
   S.editSuppId=null;
   document.getElementById('ms-title').textContent='Add supplement';
-  document.getElementById('ms-name').value='';
+  ['ms-name','ms-dose','ms-stock','ms-min','ms-notes','ms-supplier','ms-cost','ms-pdate'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ms-cat').value='vitamin';
-  document.getElementById('ms-dose').value='';
   document.getElementById('ms-freq').value='daily';
-  document.getElementById('ms-stock').value='';
   document.getElementById('ms-min').value='14';
-  document.getElementById('ms-notes').value='';
   document.getElementById('ms-person').innerHTML=S.people.map(p=>`<option value="${p.id}"${p.id===personId?' selected':''}>${p.name}</option>`).join('');
   openMo('m-supp');
 }
@@ -891,6 +1491,9 @@ function openEditSupp(id){
   document.getElementById('ms-stock').value=s.stock;
   document.getElementById('ms-min').value=s.min;
   document.getElementById('ms-notes').value=s.notes||'';
+  document.getElementById('ms-supplier').value=s.supplier||'';
+  document.getElementById('ms-cost').value=s.cost||'';
+  document.getElementById('ms-pdate').value=s.pdate||'';
   document.getElementById('ms-person').innerHTML=S.people.map(p=>`<option value="${p.id}"${p.id===s.personId?' selected':''}>${p.name}</option>`).join('');
   openMo('m-supp');
 }
@@ -905,6 +1508,9 @@ function saveSupp(){
     stock:parseInt(document.getElementById('ms-stock').value)||0,
     min:parseInt(document.getElementById('ms-min').value)||14,
     notes:document.getElementById('ms-notes').value.trim(),
+    supplier:document.getElementById('ms-supplier').value.trim(),
+    cost:document.getElementById('ms-cost').value.trim(),
+    pdate:document.getElementById('ms-pdate').value,
   };
   if(S.editSuppId){
     const idx=S.supplements.findIndex(x=>x.id===S.editSuppId);
@@ -936,8 +1542,10 @@ function renderPeople(){
         return`<div class="sec-sub">${s.l}</div>${meds.map(m=>`<div class="edit-row">
           <div class="edit-dot" style="background:${p.color}"></div>
           <div style="flex:1;min-width:0"><div class="edit-name">${m.name}</div><div class="edit-sub">${m.dose} · ${m.stock} left</div></div>
+          <button class="ic-btn" title="Add stock" onclick="quickAddMed(${p.id},${m.id})">➕</button>
+          <button class="ic-btn" title="Discard" onclick="openDiscardMed(${p.id},${m.id})">🗑️</button>
           <button class="ic-btn" onclick="openEditMed(${p.id},${m.id})">✏️</button>
-          <button class="ic-btn" onclick="confirmDel('Remove <b>${m.name}</b>?',()=>{const pp=S.people.find(x=>x.id===${p.id});if(pp)pp.meds=pp.meds.filter(x=>x.id!==${m.id});renderPeople();})">🗑️</button>
+          <button class="ic-btn" onclick="confirmDel('Remove <b>${m.name}</b>?',()=>{const pp=S.people.find(x=>x.id===${p.id});if(pp)pp.meds=pp.meds.filter(x=>x.id!==${m.id});renderPeople();})">❌</button>
         </div>`).join('')}`;}).join('')}
       <button class="btn-s" style="width:100%;margin-top:12px" onclick="openAddMed(${p.id})">＋ Add medicine</button>
     </div>`;}).join('');
@@ -979,7 +1587,7 @@ function savePerson(){
 function openAddMed(pid){
   editMedPersonId=pid;editMedId=null;
   document.getElementById('mm-title').textContent='Add medicine';
-  ['mm-name','mm-dose','mm-stock','mm-min'].forEach(id=>document.getElementById(id).value='');
+  ['mm-name','mm-dose','mm-stock','mm-min','mm-supplier','mm-cost','mm-pdate'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('mm-session').value='day';
   openMo('m-med');
 }
@@ -987,18 +1595,184 @@ function openEditMed(pid,mid){
   const p=S.people.find(x=>x.id===pid);const m=p?.meds.find(x=>x.id===mid);if(!m)return;
   editMedPersonId=pid;editMedId=mid;
   document.getElementById('mm-title').textContent='Edit medicine';
-  document.getElementById('mm-name').value=m.name;document.getElementById('mm-dose').value=m.dose;
-  document.getElementById('mm-session').value=m.session;document.getElementById('mm-stock').value=m.stock;document.getElementById('mm-min').value=m.min;
+  document.getElementById('mm-name').value=m.name;
+  document.getElementById('mm-dose').value=m.dose;
+  document.getElementById('mm-session').value=m.session;
+  document.getElementById('mm-stock').value=m.stock;
+  document.getElementById('mm-min').value=m.min;
+  document.getElementById('mm-supplier').value=m.supplier||'';
+  document.getElementById('mm-cost').value=m.cost||'';
+  document.getElementById('mm-pdate').value=m.pdate||'';
   openMo('m-med');
 }
 function saveMed(){
   const name=document.getElementById('mm-name').value.trim();if(!name)return;
-  const data={name,dose:document.getElementById('mm-dose').value.trim()||'1 pill',session:document.getElementById('mm-session').value,stock:parseInt(document.getElementById('mm-stock').value)||0,min:parseInt(document.getElementById('mm-min').value)||14};
+  const data={
+    name,
+    dose:document.getElementById('mm-dose').value.trim()||'1 pill',
+    session:document.getElementById('mm-session').value,
+    stock:parseInt(document.getElementById('mm-stock').value)||0,
+    min:parseInt(document.getElementById('mm-min').value)||14,
+    supplier:document.getElementById('mm-supplier').value.trim(),
+    cost:document.getElementById('mm-cost').value.trim(),
+    pdate:document.getElementById('mm-pdate').value,
+  };
   const p=S.people.find(x=>x.id===editMedPersonId);if(!p)return;
   if(editMedId){const m=p.meds.find(x=>x.id===editMedId);if(m)Object.assign(m,data);}
   else p.meds.push({id:S.nextId++,...data});
-  closeMo('m-med');renderPeople();
+  closeMo('m-med');renderPeople();renderStock();
 }
+
+
+// ══════ DISCARD MEDICINE ══════
+let discardMedPersonId=null,discardMedId=null;
+function openDiscardMed(pid,mid){
+  const p=S.people.find(x=>x.id===pid);const m=p?.meds.find(x=>x.id===mid);if(!m)return;
+  discardMedPersonId=pid;discardMedId=mid;
+  document.getElementById('mdm-name').textContent=`${m.name} · ${m.stock} currently in stock`;
+  document.getElementById('mdm-qty').value='';
+  openMo('m-discard-med');
+}
+function confirmDiscardMed(){
+  const qty=parseInt(document.getElementById('mdm-qty').value)||0;
+  const reason=document.getElementById('mdm-reason').value;
+  const p=S.people.find(x=>x.id===discardMedPersonId);
+  const m=p?.meds.find(x=>x.id===discardMedId);
+  if(m&&qty>0){
+    m.stock=Math.max(0,m.stock-qty);
+    const now=new Date();
+    S.log.unshift({action:'Discard',drug:m.name,person:p.name,by:'User',date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),detail:`${qty} tabs discarded · ${reason}`});
+  }
+  closeMo('m-discard-med');
+  renderPeople();renderHome();renderStock();
+}
+
+// ══════ DISCARD SUPPLEMENT ══════
+let discardSuppId=null;
+function openDiscardSupp(id){
+  const s=S.supplements.find(x=>x.id===id);if(!s)return;
+  discardSuppId=id;
+  document.getElementById('mds-name').textContent=`${s.name} · ${s.stock} currently in stock`;
+  document.getElementById('mds-qty').value='';
+  openMo('m-discard-supp');
+}
+function confirmDiscardSupp(){
+  const qty=parseInt(document.getElementById('mds-qty').value)||0;
+  const reason=document.getElementById('mds-reason').value;
+  const s=S.supplements.find(x=>x.id===discardSuppId);
+  if(s&&qty>0){
+    s.stock=Math.max(0,s.stock-qty);
+    const p=S.people.find(x=>x.id===s.personId);
+    const now=new Date();
+    S.log.unshift({action:'Discard',drug:s.name,person:p?.name||'?',by:'User',date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),detail:`${qty} units discarded · ${reason}`});
+  }
+  closeMo('m-discard-supp');
+  renderSupps();
+}
+
+// ══════ EXPORT / IMPORT ══════
+function doExport(){
+  const payload={version:2,exported:new Date().toISOString(),data:{people:S.people,supplements:S.supplements,batches:S.batches,log:S.log,nextId:S.nextId}};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='homemed-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  const msg=document.getElementById('export-msg');
+  msg.textContent='✓ File downloaded! Save it to transfer to another device.';
+  setTimeout(()=>{msg.textContent='';},5000);
+}
+function doImport(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=JSON.parse(e.target.result);
+      const d=parsed.data||parsed;
+      if(!d.people||!Array.isArray(d.people))throw new Error('Invalid file');
+      S.people=d.people;
+      S.supplements=d.supplements||[];
+      S.batches=d.batches||[];
+      S.log=d.log||[];
+      S.nextId=d.nextId||600;
+      closeMo('m-export');
+      renderHome();
+      const msg=document.getElementById('export-msg');
+      msg.textContent='✓ Data imported successfully!';
+      setTimeout(()=>{msg.textContent='';},4000);
+    }catch(err){
+      const msg=document.getElementById('export-msg');
+      msg.style.color='var(--crit)';
+      msg.textContent='✗ Invalid file. Please use a HomeMed export file.';
+      setTimeout(()=>{msg.textContent='';msg.style.color='var(--ok)';},4000);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+function doExportPDF(){
+  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const fmtCost=c=>c?'\xA3'+parseFloat(c).toFixed(2):'—';
+  const fmtDate=d=>d?new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
+  let medRows='';
+  S.people.forEach(p=>{
+    [{k:'day',l:'Morning'},{k:'night',l:'Night'},{k:'optional',l:'Optional'}].forEach(s=>{
+      p.meds.filter(m=>m.session===s.k).forEach(m=>{
+        const r=m.stock/m.min;
+        const st=r<=0.6?'Critical':r<=1.2?'Low':'OK';
+        const stCol=r<=0.6?'#9E2A1E':r<=1.2?'#A56112':'#1A6B3A';
+        medRows+=`<tr><td>${p.name}</td><td>${m.name}</td><td>${m.dose}</td><td>${s.l}</td><td style="text-align:center">${m.stock}</td><td style="text-align:center;color:${stCol};font-weight:700">${st}</td><td>${m.supplier||'—'}</td><td style="text-align:right">${fmtCost(m.cost)}</td><td>${fmtDate(m.pdate)}</td></tr>`;
+      });
+    });
+  });
+  let suppRows='';
+  S.supplements.forEach(s=>{
+    const p=S.people.find(x=>x.id===s.personId);
+    const r=s.stock/s.min;
+    const st=r<=0.6?'Critical':r<=1.2?'Low':'OK';
+    const stCol=r<=0.6?'#9E2A1E':r<=1.2?'#A56112':'#1A6B3A';
+    const days=suppDaysLeft(s);
+    suppRows+=`<tr><td>${p?.name||'?'}</td><td>${s.name}</td><td>${s.cat}</td><td>${s.dose}</td><td>${FREQ_LABEL[s.freq]||s.freq}</td><td style="text-align:center">${s.stock}</td><td style="text-align:center">${days===999?'∞':days+'d'}</td><td style="text-align:center;color:${stCol};font-weight:700">${st}</td><td>${s.supplier||'—'}</td><td style="text-align:right">${fmtCost(s.cost)}</td><td>${fmtDate(s.pdate)}</td></tr>`;
+  });
+  let logRows=S.log.slice(0,20).map(l=>`<tr><td>${l.date}</td><td>${l.action}</td><td>${l.drug}</td><td>${l.person}</td><td>${l.by}</td><td>${l.detail}</td></tr>`).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Home Med Report</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1C1A16;background:#fff;padding:28px}h1{font-family:Georgia,serif;font-size:26px;font-weight:500;color:#163FB8;margin-bottom:4px}.sub{font-size:13px;color:#8A8478;margin-bottom:28px}h2{font-size:15px;font-weight:700;margin:24px 0 10px;padding-bottom:6px;border-bottom:2px solid #DDD8CE}h2 span{font-size:12px;font-weight:400;color:#8A8478;margin-left:8px}table{width:100%;border-collapse:collapse;margin-bottom:6px}th{background:#F5F0E8;text-align:left;padding:7px 9px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#4A463E;border-bottom:2px solid #DDD8CE}td{padding:7px 9px;border-bottom:1px solid #ECE6D9}tr:last-child td{border-bottom:none}.footer{margin-top:28px;font-size:11px;color:#8A8478;text-align:center;border-top:1px solid #DDD8CE;padding-top:14px}@media print{body{padding:12px}}</style></head><body>
+<h1>Home Med — Full Report</h1>
+<div class="sub">Generated ${date} &nbsp;·&nbsp; ${S.people.map(p=>p.name).join(', ')}</div>
+<h2>Medicines <span>${S.people.reduce((a,p)=>a+p.meds.length,0)} entries</span></h2>
+<table><tr><th>Person</th><th>Medicine</th><th>Dose</th><th>Session</th><th>Stock</th><th>Status</th><th>Supplier</th><th>Cost</th><th>Purchased</th></tr>${medRows||'<tr><td colspan="9" style="color:#8A8478">No medicines</td></tr>'}</table>
+<h2>Supplements <span>${S.supplements.length} entries</span></h2>
+<table><tr><th>Person</th><th>Name</th><th>Category</th><th>Dose</th><th>Frequency</th><th>Stock</th><th>Days left</th><th>Status</th><th>Supplier</th><th>Cost</th><th>Purchased</th></tr>${suppRows||'<tr><td colspan="11" style="color:#8A8478">No supplements</td></tr>'}</table>
+<h2>Recent Activity <span>last 20 entries</span></h2>
+<table><tr><th>Date</th><th>Action</th><th>Item</th><th>Person</th><th>By</th><th>Detail</th></tr>${logRows||'<tr><td colspan="6" style="color:#8A8478">No activity</td></tr>'}</table>
+<div class="footer">Home Med &nbsp;·&nbsp; Exported ${date} &nbsp;·&nbsp; Use browser Print → Save as PDF</div>
+</body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const w=window.open(url,'_blank');
+  if(w)setTimeout(()=>w.print(),700);
+  URL.revokeObjectURL(url);
+  const msg=document.getElementById('export-msg');
+  msg.textContent='✓ Report opened — use Print → Save as PDF in your browser.';
+  setTimeout(()=>{msg.textContent='';},6000);
+}
+
+function quickAddMed(pid,mid){
+  const qty=parseInt(prompt('Add how many tablets to stock?')||'0');
+  if(qty>0){
+    const p=S.people.find(x=>x.id===pid);const m=p?.meds.find(x=>x.id===mid);
+    if(m){
+      m.stock+=qty;
+      const now=new Date();
+      S.log.unshift({action:'Stock in',drug:m.name,person:p.name,by:'User',date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),detail:`${qty} tabs added`});
+      renderPeople();renderHome();renderStock();
+    }
+  }
+}
+
 
 // ══════ ALERTS ══════
 function renderAlerts(){
